@@ -23,6 +23,15 @@ class User(UserMixin, db.Model):
 	about_me = db.Column(db.String(180))
 	last_seen = db.Column(db.DateTime, default = datetime.utcnow)
 
+	def avatar(self, size):
+		digest = md5(str(self.email).lower().encode('utf-8')).hexdigest()
+		return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+			digest, size)
+
+	@property
+	def password(self):
+		raise AttributeError('password is not a readable attribute')
+
 	def set_password(self, password):
 		self.password_hash = generate_password_hash(password)
 

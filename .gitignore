@@ -1,5 +1,6 @@
 *.py[cod]
-
+#migrations alebric
+migrations
 # C extensions
 *.so
 # Packages
