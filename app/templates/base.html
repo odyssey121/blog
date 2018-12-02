@@ -1,0 +1,32 @@
+<html>
+    <head>
+      {% if title %}
+      <title>{{ title }} - ShirninBlog</title>
+      {% else %}
+      <title>Welcome to ShirninBlog</title>
+      {% endif %}
+    </head>
+    <body>
+        <div>
+          ShirninBlog:
+          <a href="/index">Home</a>
+          {% if current_user.is_anonymous %}
+          <a href="/login">Login</a>
+          {% else %}
+          
+          {% endif %}
+          
+        </div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li> {{message}} </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>
