@@ -9,15 +9,20 @@
     <body>
         <div>
           ShirninBlog:
-          <a href="/index">Home</a>
+          <a href="{{url_for('index')}}">Home</a>
           {% if current_user.is_anonymous %}
-          <a href="/login">Login</a>
+          <a href="{{url_for('auth.login')}}">Login</a>
           {% else %}
-          
+          <a href="{{url_for('auth.logout')}}">Logout</a>
           {% endif %}
           
         </div>
         <hr>
+        {% if current_user.is_authenticated %}
+        <h3> Hello {{current_user.username}}!!!</h3>
+        <hr>
+        {% endif %}
+        
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul>
