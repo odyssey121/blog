@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError, Length
+from wtforms import StringField, SubmitField, TextAreaField, DateField
+from wtforms.validators import DataRequired, ValidationError, Length, URL, Optional
 from app.models import User
 
 class EditProfileForm(FlaskForm):
@@ -17,3 +17,13 @@ class EditProfileForm(FlaskForm):
 			user = User.query.filter_by(username = username.data).first()
 			if user is not None:
 				raise ValidationError('Please use a different username.')
+
+class TalkFor(FlaskForm):
+	title = StringField('Title', validators = [DataRequired(), Length(min = 3, max = 140)])
+	description = TextAreaField('Description')
+	slides = StringField('Slides Embed code (450 pixels wide)')
+	video = StringField('Video Embed code (450 pixels wide)')
+	venue = StringField('Venue', validators = [DataRequired(), Length(min= 1, max = 128)])
+	venue_url = StringField('Venue URL', validators= [Length(min = 1, max = 128), URL()])
+	date = DateField('Date')
+	submit = SubmitField('Submit')

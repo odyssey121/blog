@@ -18,8 +18,8 @@ from app.errors import bp as errors_bp
 app.register_blueprint(errors_bp)
 from app.auth import bp as auth_bp
 app.register_blueprint(auth_bp, url_prefix = '/auth')
-from app.user import bp as user_bp
-app.register_blueprint(user_bp, url_prefix = '/user')
+from app.talks import bp as talks_bp
+app.register_blueprint(talks_bp, url_prefix = '/talks')
 
 
 from app import routes, models
