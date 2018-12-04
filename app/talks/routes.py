@@ -3,8 +3,18 @@ from app.talks import bp
 from flask import render_template, url_for, redirect, flash
 from flask_login import current_user
 from app.talks.forms import TalkForm
-from app.models import Talk
+from app.models import Talk, User
 from datetime import datetime
+
+
+
+
+@bp.route('/')
+def index():
+	talks = Talk.query.order_by(Talk.date.desc()).all()
+	return render_template('talks/index.html', talks = talks, title = 'Talks list')
+
+
 
 
 

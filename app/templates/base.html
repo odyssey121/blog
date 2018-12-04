@@ -1,3 +1,5 @@
+
+
 <html>
     <head>
       {% if title %}
@@ -15,6 +17,7 @@
           {% else %}
           <a href="{{url_for('auth.logout')}}">Logout</a>
           <a href="{{url_for('user', username = current_user.username)}}">Profile</a>
+          <a href="{{url_for('talks.new_talk')}}">New Talk</a>
 
           {% endif %}
           
@@ -35,5 +38,7 @@
         {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}
+        
     </body>
+
 </html>
