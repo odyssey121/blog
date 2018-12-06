@@ -13,8 +13,21 @@ from hashlib import md5
 def load_user(id):
 	return User.query.get(int(id))
 
-class Talk(db.Model):
-	__tablename__ = 'talks'
+class Comment(db.Model):
+	__tablename__ = 'comments'
+	id = db.Column(db.Integer, primary_key = True)
+	body = db.Column(db.Text)
+	body_html = db.Column(db.Text)
+	timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+	author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	author_name = db.Column(db.String(64))
+	author_email = db.Column(db.String(64))
+	notify = db.Column(db.Boolean, default = True)
+	approved = db.Column(db.Boolean, default = False)
+	article_id = db.Column(db.Boolean, db.ForeignKey('articles.id'))
+
+class Article(db.Model):
+	__tablename__ = 'articles'
 	id = db.Column(db.Integer, primary_key = True)
 	title = db.Column(db.String(128), nullable = False)
 	description = db.Column(db.Text)
@@ -24,6 +37,7 @@ class Talk(db.Model):
 	venue_url = db.Column(db.String(128))
 	date = db.Column(db.DateTime())
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	comments = db.relationship('Сomment', lazy = 'dynamic', backref = 'article')
 
 class User(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key = True)
@@ -32,7 +46,9 @@ class User(UserMixin, db.Model):
 	password_hash = db.Column(db.String(128))
 	about_me = db.Column(db.String(180))
 	last_seen = db.Column(db.DateTime, default = datetime.utcnow)
-	talks = db.relationship('Talk', backref = 'author', lazy = 'dynamic')
+	articles = db.relationship('Article', backref = 'author', lazy = 'dynamic')
+	comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic')
+
 
 	def avatar(self, size):
 		digest = md5(str(self.email).lower().encode('utf-8')).hexdigest()

@@ -3,7 +3,7 @@ from wtforms import StringField, SubmitField, TextAreaField, DateField
 from wtforms.validators import DataRequired, Length, URL, Optional
 
 
-class TalkForm(FlaskForm):
+class ArticleForm(FlaskForm):
 	title = StringField('Title', validators = [DataRequired(), Length(min = 3, max = 140)])
 	description = TextAreaField('Description')
 	slides = StringField('Slides Embed code (450 pixels wide)')

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class='page-header'>
+	{% include 'articles/_article_header.html' %}
+</div>
+<div class='article-body'>
+	{% if article.video %}
+		<div class='article-video'>
+			{{article.video | safe}}
+		</div>
+	{% endif %}
+	{% if article.slides %}
+		<div class='article-slides'>
+			{{article.slides | safe}}
+		</div>
+	{% endif %}
+</div>
+{% endblock %}

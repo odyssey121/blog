@@ -1,0 +1,13 @@
+<div class="article_header">
+<a href="{{url_for('articles.article', id = article.id)}}"><h1>{{article.title}}</h1></a>
+<h3>{{article.description}}</h3>
+<p>
+	<a href="{{url_for('user', username = article.author.username)}}">{{article.author.username}}</a>
+	at
+	{% if article.venue_url %}
+		<a href="{{article.venue_url}}">{{article.venue_url}}</a>
+	{% else %}
+		{{article.venue}}
+	{% endif %}
+</p>
+</div>

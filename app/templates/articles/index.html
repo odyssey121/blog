@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+{{current_user.is_admin}}
+{% include 'articles/_articles.html' %}
+{% endblock %}
