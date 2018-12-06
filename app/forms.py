@@ -1,7 +1,20 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, DateField
-from wtforms.validators import DataRequired, ValidationError, Length, URL, Optional
+from wtforms import StringField, SubmitField, TextAreaField, DateField, BooleanField
+from wtforms.validators import DataRequired, ValidationError, Length, URL, Optional,Email
 from app.models import User
+from flask_pagedown.fields import PageDownField
+
+
+class PresenterCommentForm(FlaskForm):
+	body = PageDownField('Comment', validators = [DataRequired()])
+	submit = SubmitField('Submit')
+
+class CommentForm(FlaskForm):
+	name = StringField('Name', validators = [DataRequired(), Length(min = 3, max =64)])
+	email = StringField('Email', validators = [DataRequired(), Length(1,64), Email()])
+	body = PageDownField('Comment', validators = [DataRequired()])
+	notify = BooleanField('Notify when new comments are posted', default = True)
+	submit = SubmitField('Submit')
 
 class EditProfileForm(FlaskForm):
 	username = StringField('Username', validators = [DataRequired()])

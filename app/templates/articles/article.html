@@ -15,4 +15,22 @@
 		</div>
 	{% endif %}
 </div>
+
+{% if comments %}
+	<h3>Comments</h3>
+	{% include 'articles/_comments.html' %}
+{% endif %}
+<h3 id='comment-form'>Write a comment</h3>
+{{form}}
+<form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.body.label }}<br>
+            {{ form.body(size=32) }}<br>
+            {% for error in form.body.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+</form>
 {% endblock %}

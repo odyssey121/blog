@@ -37,7 +37,7 @@ class Article(db.Model):
 	venue_url = db.Column(db.String(128))
 	date = db.Column(db.DateTime())
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-	comments = db.relationship('Сomment', lazy = 'dynamic', backref = 'article')
+	comments = db.relationship('Comment', lazy = 'dynamic', backref = 'article')
 
 class User(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key = True)

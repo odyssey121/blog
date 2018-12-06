@@ -3,7 +3,8 @@ from app.articles import bp
 from flask import render_template, url_for, redirect, flash, request
 from flask_login import current_user
 from app.articles.forms import ArticleForm
-from app.models import Article, User
+from app.forms import PresenterCommentForm, CommentForm
+from app.models import Article, User, Comment
 from datetime import datetime
 
 @bp.route('/')
@@ -37,11 +38,32 @@ def user(username):
 	return render_template('articles/index.html', articles_list = articles_list,
 	title = 'Articles by {}'.format(user.username))
 
-@bp.route('/<int:id>')
+@bp.route('/<int:id>', methods = ['GET', 'POST'])
 def article(id):
 	article = Article.query.get_or_404(id)
+	comment = None
+	if current_user.is_authenticated:
+		form = PresenterCommentForm()
+		if form.validate_on_submit():
+			comment = Comment(body = form.body.data, article = article,
+				author = current_user, notify = False, approved = True)
+	else:
+		form = CommentForm()
+		if form.validate_on_submit():
+			comment = Comment(body = form.body.data, article = article,
+				author_name = form.name.data, author_email = form.email.data,
+				notify = form.notify.data, approved = False)
+	if comment:
+		db.session.add(comment)
+		db.session.commit()
+		if comment.approved:
+			flash('Your comment has been published.')
+		else:
+			flash('Your comment will be published after it is reviewed by the presenter.')
+		return redirect(url_for('.article', id = article.id) + '#top')
+	comments = article.comments.order_by(Comment.timestamp.asc()).all()
 	return render_template('articles/article.html', article = article, 
-	title = 'Article {}'.format(article.title))
+	title = 'Article {}'.format(article.title), form = form , comments = comments)
 
 
 @bp.route('/new_article', methods = ['GET', 'POST'])
