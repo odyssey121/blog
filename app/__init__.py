@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
-from flaskext.markdown import Markdown
+# from flaskext.markdown import Markdown
 from flask_pagedown import PageDown
 
 app = Flask(__name__)
@@ -15,7 +15,6 @@ migrate = Migrate(app, db)
 
 moment = Moment(app)
 
-md = Markdown(app, output_format = 'html')
 pagedown = PageDown(app)
 
 login = LoginManager(app)

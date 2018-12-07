@@ -9,6 +9,9 @@ from hashlib import md5
 #For that reason, the extension expects that the application will
 #configure a user loader function, 
 #that can be called to load a user given the ID.
+from markdown import markdown
+import bleach
+
 @login.user_loader
 def load_user(id):
 	return User.query.get(int(id))
@@ -24,7 +27,15 @@ class Comment(db.Model):
 	author_email = db.Column(db.String(64))
 	notify = db.Column(db.Boolean, default = True)
 	approved = db.Column(db.Boolean, default = False)
-	article_id = db.Column(db.Boolean, db.ForeignKey('articles.id'))
+	article_id = db.Column(db.Integer, db.ForeignKey('articles.id'))
+	@staticmethod
+	def on_changed_body(target, value, oldvalue, initiator):
+		allowed_tags = ['a','abbr','acronym', 'b','blockquote','code',
+		'em','i','li','ol','pre','strong','ul','h1','h2','h3','p']
+		target.body_html = bleach.linkify(bleach.clean(markdown(value,output_format='html'),
+			tags = allowed_tags, strip = True))
+
+
 
 class Article(db.Model):
 	__tablename__ = 'articles'
@@ -67,3 +78,6 @@ class User(UserMixin, db.Model):
 
 	def __repr__(self):
 		return '<User {} id {} >'.format(self.username, self.id)
+
+
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
