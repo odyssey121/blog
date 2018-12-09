@@ -11,6 +11,7 @@ from hashlib import md5
 #that can be called to load a user given the ID.
 from markdown import markdown
 import bleach
+import re
 
 @login.user_loader
 def load_user(id):
@@ -36,6 +37,10 @@ class Comment(db.Model):
 			tags = allowed_tags, strip = True))
 
 
+articles_categories = db.Table('articles_categories',
+	db.Column('article_id', db.Integer, db.ForeignKey('articles.id')),
+	db.Column('category_id', db.Integer, db.ForeignKey('categories.id')))
+
 
 class Article(db.Model):
 	__tablename__ = 'articles'
@@ -49,6 +54,31 @@ class Article(db.Model):
 	date = db.Column(db.DateTime())
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	comments = db.relationship('Comment', lazy = 'dynamic', backref = 'article')
+	categories = db.relationship('Category', secondary = articles_categories,
+		backref = db.backref('articles', lazy = 'dynamic'))
+
+def slugify(r):
+	pattern = r'[^\w]'
+	return re.sub(pattern, '-', r)
+
+
+class Category(db.Model):
+	__tablename__ = 'categories'
+	id = db.Column(db.Integer, primary_key = True)
+	name = db.Column(db.String(30), unique = True)
+	slug = db.Column(db.String(30))
+	@staticmethod
+	def generate_slug(target, value, oldvalue, initiator):
+		target.slug = slugify(value)
+
+	def add(self, article):
+		self.articles.append(article)
+
+	def __repr__(self):
+		return '<Cetegory {} id {}>'.format(self.name, self.id)
+
+
+
 
 class User(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key = True)
@@ -81,3 +111,4 @@ class User(UserMixin, db.Model):
 
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+db.event.listen(Category.name, 'set', Category.generate_slug)

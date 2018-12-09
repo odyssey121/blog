@@ -1,7 +1,7 @@
 from app import db
 from app.articles import bp
-from flask import render_template, url_for, redirect, flash, request
-from flask_login import current_user
+from flask import render_template, url_for, redirect, flash, request,abort
+from flask_login import current_user, login_required
 from app.articles.forms import ArticleForm
 from app.forms import PresenterCommentForm, CommentForm
 from app.models import Article, User, Comment
@@ -16,6 +16,7 @@ def index():
 
 
 @bp.route('/edit/<int:id>', methods = ['POST', 'GET'])
+@login_required
 def edit(id):
 	article = Article.query.get_or_404(id)
 	if current_user != article.author:
