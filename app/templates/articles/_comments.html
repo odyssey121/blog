@@ -1,10 +1,8 @@
 <ul class='comment-list'>
 	{% for comment in comments %}
 		{% set index = loop.index %}
-		{% if comment.approved or current_user.username == admin %}
 		<li class='comment'>
 			{% include 'articles/_comment.html' %}
 		</li>
-		{% endif %}
 	{% endfor %}
 </ul>

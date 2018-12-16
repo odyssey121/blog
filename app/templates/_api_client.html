@@ -1,0 +1,45 @@
+{% if current_user.is_authenticated %}
+<script>
+	var talks_api_token = "{{current_user.get_api_token()}}";
+	function moderate_api(url, method, data, success, error){
+		if(!data){
+			data = {};
+		}
+		data.token = talks_api_token;
+		reg_url = `${location.protocol}//${location.host}/api${url}`
+		$.ajax({
+			url: reg_url,
+			type: method,
+			data: JSON.stringify(data),
+			contentType:'application/json',
+			success: success,
+			error: error
+		});
+	}
+
+	$('.api-approve').click(function(){
+		id = $(this).data('id');
+		moderate_api(`/comments/${id}`, 'PUT', {}, function(){
+			$('#moderate-'+ id).hide();
+			$('#approved-'+ id).show();
+		},
+		function(jxXHR, textStatus, errorThrown){
+			alert('Error: ' + errorThrown);
+		});
+		return false;
+
+	});
+
+	$('.api-delete').click(function(){
+		id = $(this).data('id');
+		moderate_api(`/comments/${id}`, 'DELETE', {}, function(){
+			$('#moderate-'+ id).hide();
+			$('#deleted-'+ id).show();
+		},
+		function(jqXHR, textStatus, errorThrown){
+			alert('Error:' + errorThrown);
+		});
+		return false;
+	});
+</script>
+{% endif %}

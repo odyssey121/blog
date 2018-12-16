@@ -14,7 +14,6 @@ def index():
 	return render_template('articles/index.html', articles_list = articles_list,
 	title = 'Articles')
 
-
 @bp.route('/edit/<int:id>', methods = ['POST', 'GET'])
 @login_required
 def edit(id):
@@ -30,7 +29,6 @@ def edit(id):
 		return redirect(url_for('articles.article', id = article.id))
 	return render_template('articles/edit_article.html', form = form ,
 		title = 'Edit Article')
-
 
 @bp.route('<username>')
 def user(username):
@@ -66,7 +64,6 @@ def article(id):
 	return render_template('articles/article.html', article = article, 
 	title = 'Article {}'.format(article.title), form = form , comments = comments)
 
-
 @bp.route('/new_article', methods = ['GET', 'POST'])
 def new_article():
 	form = ArticleForm()
@@ -85,3 +82,17 @@ def new_article():
 		flash('The article was added successfully.')
 		return redirect(url_for('articles.index'))
 	return render_template('articles/new_article.html', form = form, title = 'Create Article')
+
+@bp.route('/moderate')
+@login_required
+def moderate():
+	comments = current_user.for_moderation().order_by(Comment.timestamp.asc())
+	return render_template('articles/moderate.html', comments = comments)
+
+@bp.route('/moderate-admin')
+@login_required
+def moderate_admin():
+	comments = Comment.for_moderation().order_by(Comment.timestamp.asc())
+	return render_template('articles/moderate.html', comments = comments)
+
+

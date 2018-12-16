@@ -1,4 +1,4 @@
-from app import db
+from app import db,app
 from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
@@ -9,7 +9,8 @@ from hashlib import md5
 #For that reason, the extension expects that the application will
 #configure a user loader function, 
 #that can be called to load a user given the ID.
-from markdown import markdown
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from markdown import markdown 
 import bleach
 import re
 
@@ -36,11 +37,15 @@ class Comment(db.Model):
 		target.body_html = bleach.linkify(bleach.clean(markdown(value,output_format='html'),
 			tags = allowed_tags, strip = True))
 
+	@staticmethod
+	def for_moderation():
+		return Comment.query.filter(Comment.approved == False)
+
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
 articles_categories = db.Table('articles_categories',
 	db.Column('article_id', db.Integer, db.ForeignKey('articles.id')),
 	db.Column('category_id', db.Integer, db.ForeignKey('categories.id')))
-
 
 class Article(db.Model):
 	__tablename__ = 'articles'
@@ -56,6 +61,9 @@ class Article(db.Model):
 	comments = db.relationship('Comment', lazy = 'dynamic', backref = 'article')
 	categories = db.relationship('Category', secondary = articles_categories,
 		backref = db.backref('articles', lazy = 'dynamic'))
+
+	def approved_comments(self):
+		return self.comments.filter_by(approved = True)
 
 def slugify(r):
 	pattern = r'[^\w]'
@@ -76,23 +84,36 @@ class Category(db.Model):
 
 	def __repr__(self):
 		return '<Cetegory {} id {}>'.format(self.name, self.id)
-<<<<<<< HEAD
-=======
 
-
-
->>>>>>> 20cb8e5d877baba3bfd3e6642aaff23ddb482ab6
+db.event.listen(Category.name, 'set', Category.generate_slug)
 
 class User(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key = True)
 	username = db.Column(db.String(64), index = True, unique = True)
 	email = db.Column(db.String(120), index = True, unique = True)
 	password_hash = db.Column(db.String(128))
+	is_admin = db.Column(db.Boolean)
 	about_me = db.Column(db.String(180))
 	last_seen = db.Column(db.DateTime, default = datetime.utcnow)
+	location = db.Column(db.String(64))
 	articles = db.relationship('Article', backref = 'author', lazy = 'dynamic')
 	comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic')
 
+	def get_api_token(self, expiration = 300):
+		s = Serializer(app.config['SECRET_KEY'], expiration)
+		return s.dumps({'user':self.id}).decode('utf-8')
+
+	@staticmethod
+	def validate_api_token(token):
+		s = Serializer(app.config['SECRET_KEY'])
+		try:
+			data = s.loads(token)
+		except:
+			return None
+		id = data.get('user')
+		if id:
+			return User.query.get(id)
+		return None
 
 	def avatar(self, size):
 		digest = md5(str(self.email).lower().encode('utf-8')).hexdigest()
@@ -103,15 +124,22 @@ class User(UserMixin, db.Model):
 	def password(self):
 		raise AttributeError('password is not a readable attribute')
 
+	@password.setter
 	def set_password(self, password):
 		self.password_hash = generate_password_hash(password)
 
 	def check_password_hash(self, password):
 		return check_password_hash(self.password_hash, password)
 
+	def for_moderation(self, admin = False):
+		if admin and self.is_admin:
+			return Comment.for_moderation()
+		return Comment.query.join(Article, Comment.article_id == Article.id).\
+		filter(Article.author == self).filter(Comment.approved == False)
+
 	def __repr__(self):
 		return '<User {} id {} >'.format(self.username, self.id)
 
 
-db.event.listen(Comment.body, 'set', Comment.on_changed_body)
-db.event.listen(Category.name, 'set', Category.generate_slug)
+
+
