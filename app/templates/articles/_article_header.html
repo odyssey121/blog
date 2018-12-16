@@ -9,5 +9,7 @@
 	{% else %}
 		{{article.venue}}
 	{% endif %}
+	<a href="{{url_for('articles.article', id = article.id) + '#comments'}}">
+	comment{{article.comments.count()}}</a>
 </p>
 </div>

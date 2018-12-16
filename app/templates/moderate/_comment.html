@@ -1,0 +1,23 @@
+<table>
+	<tr valign="top">
+		<td>
+			<p>
+				<span class='label label-default'>#{{index}}</span>
+				<p> in <a href="{{url_for('articles.article', id = comment.article_id)}}">
+				{{comment.article.title}}</a></p>
+				<b>{{comment.author_name}}</b>
+				<a href='mailto:{{ comment.author_email }}'>{{comment.author_email}}</a>
+				commented {{moment(comment.timestamp).fromNow()}} :
+			</p>
+			<div class='comment-body'>
+
+				{{comment.body_html | safe}}
+				
+			</div>
+		</td>
+		<td>
+			<a href="#" class="btn btn-primary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">Approve</a>
+			<a href="#" class="btn btn-secondary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">Remove</a>
+		</td>
+</table>
+

@@ -76,6 +76,12 @@ class Category(db.Model):
 
 	def __repr__(self):
 		return '<Cetegory {} id {}>'.format(self.name, self.id)
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 20cb8e5d877baba3bfd3e6642aaff23ddb482ab6
 
 class User(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key = True)
