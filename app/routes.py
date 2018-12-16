@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from app.models import User
+from app.models import User, Comment, Article
 from app.forms import EditProfileForm
 from datetime import datetime
 
@@ -15,6 +15,19 @@ def before_request():
 @app.route('/index')
 def index():
 	return render_template('index.html')
+
+
+@app.route('/moderate')
+@login_required
+def moderate():
+	articles = Article.query.all()
+
+	comment_list_not_approve = Comment.query.filter(Comment.approved == False)
+	comments = comment_list_not_approve.order_by(Comment.timestamp.desc()).all()
+	return render_template('moderate/moderate.html', comments = comments, title = 'moderate')
+
+
+
 
 @app.route('/user/<username>')
 @login_required
