@@ -1,5 +1,5 @@
 from flask import jsonify
-from app.api import api
+from . import api
 
 def bad_request(message):
 	response = jsonify({'status':'bad request', 'message': message})

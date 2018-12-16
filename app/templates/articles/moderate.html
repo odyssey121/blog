@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Comment moderation</h2>
+<ul class='comment-list'>
+	{% for comment in comments %}
+		{% set article = comment.article %}
+		<li class='comment'>
+			<p>In <a href="{{url_for('articles.article', id = article.id)}}">
+			{{article.id}}</a></p>
+			{% include 'articles/_comment.html' %}
+		</li>
+	{% endfor %}
+</ul>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{% endblock %}

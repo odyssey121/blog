@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 from app.models import User, Comment, Article
 from app.forms import EditProfileForm
 from datetime import datetime
+from flask import jsonify
 
 @app.before_request
 def before_request():
@@ -11,22 +12,27 @@ def before_request():
 		current_user.last_seen = datetime.utcnow()
 		db.session.commit()
 
+
 @app.route('/')
 @app.route('/index')
 def index():
 	return render_template('index.html')
 
 
+#test
+@app.route('/test')
+def test():
+	response = jsonify({'status':'bad request', 'message':'message'})
+	response.status_code = 404
+	return response
+
 @app.route('/moderate')
 @login_required
 def moderate():
 	articles = Article.query.all()
-
 	comment_list_not_approve = Comment.query.filter(Comment.approved == False)
 	comments = comment_list_not_approve.order_by(Comment.timestamp.desc()).all()
 	return render_template('moderate/moderate.html', comments = comments, title = 'moderate')
-
-
 
 
 @app.route('/user/<username>')

@@ -29,5 +29,8 @@ app.register_blueprint(auth_bp, url_prefix = '/auth')
 from app.articles import bp as articles_bp
 app.register_blueprint(articles_bp, url_prefix = '/articles')
 
+from app.api import api 
+app.register_blueprint(api, url_prefix = '/api')
+
 from app import routes, models ,errors
 
