@@ -6,7 +6,11 @@
 		{% set article = comment.article %}
 		<li class='comment'>
 			<p>In <a href="{{url_for('articles.article', id = article.id)}}">
+<<<<<<< HEAD
 			{{article.title}}</a></p>
+=======
+			{{article.id}}</a></p>
+>>>>>>> 9c1d010460d3c6af320dd10439e5fb3051faeafa
 			{% include 'articles/_comment.html' %}
 		</li>
 	{% endfor %}
@@ -14,5 +18,8 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
+<<<<<<< HEAD
 {% include '_api_client.html' %}
+=======
+>>>>>>> 9c1d010460d3c6af320dd10439e5fb3051faeafa
 {% endblock %}

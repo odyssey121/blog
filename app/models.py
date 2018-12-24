@@ -100,12 +100,21 @@ class User(UserMixin, db.Model):
 	comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic')
 
 	def get_api_token(self, expiration = 300):
+<<<<<<< HEAD
 		s = Serializer(app.config['SECRET_KEY'], expiration)
 		return s.dumps({'user':self.id}).decode('utf-8')
 
 	@staticmethod
 	def validate_api_token(token):
 		s = Serializer(app.config['SECRET_KEY'])
+=======
+		s = Serializer(current_app.config['SECRET_KEY'], expiration)
+		return s.dumps({'user', self.id}).decode('utf-8')
+
+	@staticmethod
+	def validate_api_token(token):
+		s = Serializer(current_app.config['SECRET_KEY'])
+>>>>>>> 9c1d010460d3c6af320dd10439e5fb3051faeafa
 		try:
 			data = s.loads(token)
 		except:
@@ -134,7 +143,11 @@ class User(UserMixin, db.Model):
 	def for_moderation(self, admin = False):
 		if admin and self.is_admin:
 			return Comment.for_moderation()
+<<<<<<< HEAD
 		return Comment.query.join(Article, Comment.article_id == Article.id).\
+=======
+		return Comment.query.join(Article, Comment.article.id == Article.id).\
+>>>>>>> 9c1d010460d3c6af320dd10439e5fb3051faeafa
 		filter(Article.author == self).filter(Comment.approved == False)
 
 	def __repr__(self):
