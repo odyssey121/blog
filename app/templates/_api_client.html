@@ -1,11 +1,11 @@
 {% if current_user.is_authenticated %}
 <script>
-	var talks_api_token = "{{current_user.get_api_token()}}";
+	var articles_api_token = "{{current_user.get_api_token()}}";
 	function moderate_api(url, method, data, success, error){
 		if(!data){
 			data = {};
 		}
-		data.token = talks_api_token;
+		data.token = articles_api_token;
 		reg_url = `${location.protocol}//${location.host}/api${url}`
 		$.ajax({
 			url: reg_url,
