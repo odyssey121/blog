@@ -10,9 +10,11 @@ from hashlib import md5
 #configure a user loader function, 
 #that can be called to load a user given the ID.
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from markdown import markdown 
+from markdown import markdown
+from time import time 
 import bleach
 import re
+import jwt
 
 @login.user_loader
 def load_user(id):
@@ -99,6 +101,19 @@ class User(UserMixin, db.Model):
 	articles = db.relationship('Article', backref = 'author', lazy = 'dynamic')
 	comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic')
 
+	def get_reset_password_token(self, expires_in = 600):
+		return jwt.encode({'reset_password':self.id, 'exp': time() + expires_in},
+			app.config['SECRET_KEY'], algorithm = 'HS256').decode('utf-8')
+
+	@staticmethod
+	def verify_reset_password_token(token):
+		try:
+			id = jwt.decode(token, app.config['SECRET_KEY'],
+			algorithms = ['HS256'])['reset_password']
+		except:
+			return
+		return User.query.get(id)
+
 	def get_api_token(self, expiration = 300):
 		s = Serializer(app.config['SECRET_KEY'], expiration)
 		return s.dumps({'user':self.id}).decode('utf-8')
@@ -119,12 +134,10 @@ class User(UserMixin, db.Model):
 		digest = md5(str(self.email).lower().encode('utf-8')).hexdigest()
 		return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
 			digest, size)
-
 	@property
 	def password(self):
 		raise AttributeError('password is not a readable attribute')
 
-	@password.setter
 	def set_password(self, password):
 		self.password_hash = generate_password_hash(password)
 

@@ -4,8 +4,6 @@ from ..models import User
 from flask import request, g
 from . import errors,comment
 
-
-
 @api.before_request
 def before_api_request():
 	if request.json is None:

@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from flask_moment import Moment
 # from flaskext.markdown import Markdown
 from flask_pagedown import PageDown
+from flask_mail import Mail
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -14,6 +15,8 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 moment = Moment(app)
+
+mail = Mail(app)
 
 pagedown = PageDown(app)
 
